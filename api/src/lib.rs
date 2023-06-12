@@ -3,6 +3,8 @@ Exports
 */
 pub mod models;
 pub mod api;
+pub mod client;
+pub use client::Client;
 
 // Dependencies
 use sha2::Sha512;

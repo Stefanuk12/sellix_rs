@@ -1,6 +1,6 @@
 // Dependencies
 use dotenv::dotenv;
-use sellix_rs::{api::Blacklist, models::blacklist::{BlacklistCreatePayload, BlacklistTypes}};
+use sellix_rs::{ models::blacklist::{BlacklistCreatePayload, BlacklistTypes}, Client };
 use std::env;
 
 // Entrypoint
@@ -18,10 +18,8 @@ async fn main() {
     }
 
     // Build the client that would send out requests to the blacklist API
-    let blacklist_client = Blacklist {
-        api_key,
-        merchant
-    };
+    let client = Client::new( api_key, merchant );
+    let blacklist_client = client.blacklist;
 
     // Grab all of the blacklists
     let blacklists = blacklist_client.create(BlacklistCreatePayload {
