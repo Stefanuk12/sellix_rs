@@ -9,6 +9,6 @@ pub struct LicenseProduct {
     key: String,
     /// UNIQID of the product.
     product_id: String,
-    /// UNIQID of the product.
+    /// Hardware ID of the customer.
     hardware_id: String
 }
