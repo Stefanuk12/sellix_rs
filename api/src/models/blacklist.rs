@@ -1,4 +1,3 @@
-
 // Dependencies
 use serde::{Serialize, Deserialize};
 use super::{RawAPIResponse, UniqidDict};
