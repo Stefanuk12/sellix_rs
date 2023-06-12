@@ -1,4 +1,4 @@
-/// Represents all of the order events
+/// Represents all of the order events.
 pub enum Order {
     Created,
     Updated,
@@ -34,7 +34,7 @@ impl Order {
     }
 }
 
-/// Represents all of the query events
+/// Represents all of the query events.
 pub enum Query {
     Created,
     Replied,
@@ -49,7 +49,7 @@ impl Query {
     }
 }
 
-/// Represents all of the feedback events
+/// Represents all of the feedback events.
 pub enum Feedback {
     Created,
 }
@@ -62,7 +62,7 @@ impl Feedback {
     }
 }
 
-/// Represents all of the product events
+/// Represents all of the product events.
 pub enum Product {
     Created,
     Edited,
@@ -82,16 +82,33 @@ impl Product {
 }
 
 
-/// Represents all of the subscription events
+/// Represents all of the subscription events.
+/// <https://developers.sellix.io/#subscription-handle-webhook-events>.
 pub enum Subscription {
+    /// This webhook has been already sent if the product has a trial period.
+    /// If not, this webhook is sent right after an invoice `PRODUCT_SUBSCRIPTION` has been successfully paid.
+    /// The subscription has been started for your customer and the payment succeeded,
+    /// you should implement there any logic that you might deem necessary to activate your customer's subscription.
+    /// We highly suggest the usage of our custom fields to act as a metadata object in order to recognize which customer purchased your subscription and activate it to them.
     Created,
+    /// If the customer updates his preferred gateway for the subscription through the Customer Billing Portal
+    /// you will receive a webhook event with the updated subscription object.
     Updated,
+    /// When the payment for a subscription renewal happens, this webhook is sent to let you know that everything went well.
+    /// You do not need to be listening to this event specifically as you can manage your subscriptions through only the `created` and `cancelled` events.
     Renewed,
+    /// Should you or the customer decide to cancel the subscription, this webhook event is sent.
     Cancelled,
+    /// Event sent a few days before a subscription is about to be renewed.
     Upcoming,
-
+    /// Optional, sent only if the product has a trial period enabled.
+    /// A trial for one of your product subscription has been started, we will not create any invoice in relation to this event.
+    /// If this webhook is sent, it’s preceded by a `subscription:created` event with a unique status.
     TrialStarted,
+    /// Optional, sent only if the product has a trial period enabled and it has come to an end.
+    /// A trial for one of your product subscription has ended, we will not create any invoice in relation to this event.
     TrialEnded,
+
     TrialStartedProduct,
     TrialEndedProduct,
     CreatedProduct,
