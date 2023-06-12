@@ -5,9 +5,13 @@ use serde_json::Value;
 use serde_with::TimestampSeconds;
 use serde_with::formats::Flexible;
 use std::time::SystemTime;
+use super::payment::PaymentGateway;
 
 /// All of the possible intervals subscriptions can be billed within
 /// <https://developers.sellix.io/#subscription-features>.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
+#[strum(serialize_all="UPPERCASE")]
+#[serde(rename_all="UPPERCASE")]
 pub enum RecurringBillingIntervals {
     Daily,
     Weekly,
@@ -17,6 +21,9 @@ pub enum RecurringBillingIntervals {
 
 /// All of the possible statuses a subscription can be in
 /// <https://developers.sellix.io/#subscription-configure-webhooks>.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
+#[strum(serialize_all="UPPERCASE")]
+#[serde(rename_all="UPPERCASE")]
 pub enum SubscriptionStatus {
     Pending,
     Cancelled,
@@ -25,6 +32,7 @@ pub enum SubscriptionStatus {
 }
 
 /// Represents the possible customer details from an API object.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CustomerData {
     /// Customer name
     pub name: String,
@@ -54,7 +62,6 @@ pub struct CustomerData {
 /// <https://developers.sellix.io/#subscription-configure-webhooks>.
 #[serde_with::serde_as]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct SubscriptionRaw {
     /// ID of the subscription (recurring bill)
     pub id: String,
@@ -63,9 +70,9 @@ pub struct SubscriptionRaw {
     /// ID of the shop whose resource is assigned to
     pub product_id: String,
     /// Subscription's status, see more info about statuses below
-    pub status: String,
+    pub status: SubscriptionStatus,
     /// Subscription's gateway chosen by the customer. If status is TRIALING, this field is null
-    pub gateway: String,
+    pub gateway: PaymentGateway,
     /// Custom fields passed (required by the product configuration)
     pub custom_fields: HashMap<String, String>,
     /// ID of the customer for which this subscription was created

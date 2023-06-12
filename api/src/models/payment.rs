@@ -29,10 +29,57 @@ pub struct FraudShield {
     user_language: String,
 }
 
-/// All of the payment gateways.
-#[derive(Debug, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
+/// Represents a singular payment gateway.
+#[derive(Debug, Clone, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display, PartialEq)]
 #[strum(serialize_all="SCREAMING_SNAKE_CASE")]
-enum PaymentGateways {
+#[serde(rename_all="SCREAMING_SNAKE_CASE")]
+pub enum PaymentGateway {
+    Paypal,
+    Ethereum,
+    BinanceCoin,
+    Bitcoin,
+    BitcoinCash,
+    Litecoin,
+    Skrill,
+    Stripe,
+    PerfectMoney,
+    CashApp,
+    LexHoldingsGroup,
+    Concordium,
+    Paydash,
+    Monero,
+    BitcoinLn,
+    Nano,
+    Solana,
+    Ripple,
+    Polygon,
+    #[serde(rename="PLZ:TRC20")]
+    PlzTrc20,
+    #[serde(rename="PLZ:BEP20")]
+    PlzBep20,
+    #[serde(rename="USDC:MATIC")]
+    UsdcMatic,
+    #[serde(rename="USDC:ERC20")]
+    UsdtErc20,
+    #[serde(rename="USDT:MATIC")]
+    UsdtMatic,
+    #[serde(rename="USDT:BEP20")]
+    UsdtBep20,
+    #[serde(rename="USDT:TRC20")]
+    UsdtTrc20,
+    #[serde(rename="USDC:ERC20")]
+    UsdcErc20,
+    #[serde(rename="USDC:BEP20")]
+    UsdcBep20,
+    Tron
+}
+
+
+/// All of the payment gateways.
+#[derive(Debug, Clone, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display, PartialEq)]
+#[strum(serialize_all="SCREAMING_SNAKE_CASE")]
+#[serde(rename_all="SCREAMING_SNAKE_CASE")]
+pub enum PaymentGateways {
     Paypal,
     Ethereum,
     BinanceCoin,
@@ -59,10 +106,11 @@ enum PaymentGateways {
     Binance
 }
 
-/// All of the possible payment methods.
-#[derive(Debug, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
+/// All of possible APMs for PayPal.
+#[derive(Debug, Clone, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display, PartialEq)]
 #[strum(serialize_all="lowercase")]
-pub enum PaymentMethod {
+#[serde(rename_all="lowercase")]
+pub enum PayPalAPM {
     Bancontact,
     Eps,
     Trustly,
@@ -92,7 +140,7 @@ pub struct SellixPaymentPayload {
     cart: Cart,
     /// If null, the customer will be asked automatically to choose a gateway on the Sellix hosted /payment page.
     /// If `product_id` is specified, the gateway must be on in the product's gateways array.
-    gateway: Option<PaymentGateways>,
+    gateway: Option<PaymentGateway>,
     /// Array of accepted gateways, if gateway is NULL the user will be prompted to choose one of these.
     gateways: Vec<PaymentGateways>,
     /// Object containing product addons available for the product.
@@ -107,11 +155,12 @@ pub struct SellixPaymentPayload {
     /// To retrieve the available PayPal APM for a specific customer session,
     /// please refer to the PayPal SDK using `window.paypal.FUNDING` and `fundingSource` to filter out available methods. 
     /// You can also use our documentation on how to process white_label payments.
-    paypal_apm: Option<PaymentGateways>,
+    paypal_apm: Option<PayPalAPM>,
     /// If `gateway` is `PAYPAL` and no `paypal_apm` is passed,
     /// specify `credit_card` `true` to land the customer on the PayPal managed credit card page instead of the onboarding login.
     credit_card: Option<String>,
     /// Deprecated
+    #[deprecated]
     lex_payment_method: Option<String>,
     /// Required if `product_id` and `cart` are `null`.
     /// The customer will be asked to pay for this amount.
