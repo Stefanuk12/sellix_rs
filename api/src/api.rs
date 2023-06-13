@@ -3,7 +3,7 @@ use serde::Serialize;
 use serde_json::{Value, json};
 use async_trait::async_trait;
 use sellix_rs_macros::{WithAPIKey, WithDoRequest};
-use crate::models::{blacklist::{BlacklistRaw, BlacklistGetResponseRaw, BlacklistsArray, BlacklistListResponseRaw, BlacklistCreatePayload, BlacklistCreateResponseRaw}, RequestType, RawAPIResponse, SellixHttpCode, UniqidDict, SellixError, whitelist::{WhitelistRaw, WhitelistGetResponseRaw, WhitelistsArray, WhitelistListResponseRaw, WhitelistCreatePayload, WhitelistCreateResponseRaw}};
+use crate::models::{blacklist::{BlacklistRaw, BlacklistGetResponseRaw, BlacklistsArray, BlacklistListResponseRaw, BlacklistCreatePayload, BlacklistCreateResponseRaw}, RequestType, RawAPIResponse, SellixHttpCode, UniqidDict, SellixError, whitelist::{WhitelistRaw, WhitelistGetResponseRaw, WhitelistsArray, WhitelistListResponseRaw, WhitelistCreatePayload, WhitelistCreateResponseRaw}, category::{CategoryGetResponseRaw, CategoryRaw, CategoryArray, CategoryCreateResponseRaw, CategoryCreatePayload, CategoryListResponseRaw}};
 
 // Constants
 const API_BASE: &str = "https://dev.sellix.io/v1";
@@ -35,6 +35,7 @@ pub trait DoRequest: WithAPIKey {
         let json = response.json::<Value>().await?;
 
         // Check the status
+        println!("{}", json);
         let status = json["status"].as_u64().unwrap();
         if status == 200 {
             let json_resp: T = serde_json::from_value(json).unwrap();
@@ -225,6 +226,100 @@ impl Whitelist {
     pub async fn delete(&self, uniqid: &str) -> Result<bool, SellixError> {
         // Used to build the url
         let (method, path_builder) = RequestType::WhitelistDestroy.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &json!({
+                "uniqid": uniqid
+            }))
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<RawAPIResponse<()>, Value>(method, &path, None)
+            .await
+            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
+    }
+}
+
+/// Categories
+#[derive(WithAPIKey, WithDoRequest)]
+pub struct Category {
+    pub api_key: String,
+    pub merchant: Option<String>
+}
+impl Category {
+    /// Creates a new instance.
+    pub fn new(api_key: &str, merchant: Option<&str>) -> Self {
+        Self {
+            api_key: api_key.to_string(),
+            merchant: merchant.and_then(|x| Some(x.to_string()))
+        }
+    }
+
+    /// Retrieves a Category by ID.
+    pub async fn get(&self, uniqid: &str) -> Result<CategoryRaw, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CategoryGet.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &json!({
+                "uniqid": uniqid
+            }))
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<CategoryGetResponseRaw, CategoryRaw>(method, &path, None)
+            .await
+            .and_then(|x| Ok(x.data.unwrap().category))
+    }
+
+    /// Returns a list of the Category. The whitelist are sorted by creation date, with the most recently created whitelist being first.
+    pub async fn get_list(&self, page: Option<u64>) -> Result<CategoryArray, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CategoryList.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &json!({
+                "page": page
+            }))
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<CategoryListResponseRaw, CategoryArray>(method, &path, None)
+            .await
+            .and_then(|x| Ok(x.data.unwrap()))
+    }
+
+    /// Creates a Category.
+    pub async fn create(&self, payload: CategoryCreatePayload<'_>) -> Result<UniqidDict, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CategoryCreate.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &payload)
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<CategoryCreateResponseRaw, CategoryCreatePayload>(method, &path, Some(payload))
+            .await
+            .and_then(|x| Ok(x.data.unwrap()))
+    }
+
+    /// Edits a Category.
+    pub async fn edit(&self, uniqid: &str, payload: CategoryCreatePayload<'_>) -> Result<bool, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CategoryUpdate.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &json!({
+                "uniqid": uniqid
+            }))
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<RawAPIResponse<UniqidDict>, CategoryCreatePayload>(method, &path, Some(payload))
+            .await
+            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
+    }
+
+    /// Deletes a Category.
+    pub async fn delete(&self, uniqid: &str) -> Result<bool, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CategoryDestroy.request_details();
         let path = handlebars::Handlebars::new()
             .render_template(path_builder, &json!({
                 "uniqid": uniqid

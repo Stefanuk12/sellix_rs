@@ -1,10 +1,11 @@
 // Dependencies
-use crate::api::{Blacklist, Whitelist};
+use crate::api::{Blacklist, Whitelist, Category};
 
 /// Contains each "sub-API" within one struct.
 pub struct Client {
     pub blacklist: Blacklist,
     pub whitelist: Whitelist,
+    pub category: Category,
 }
 impl Client {
     /// Create an instance of the struct.
@@ -12,6 +13,7 @@ impl Client {
         Self {
             blacklist: Blacklist::new( api_key, merchant ),
             whitelist: Whitelist::new( api_key, merchant ),
+            category: Category::new( api_key, merchant ),
         }
     }
 }

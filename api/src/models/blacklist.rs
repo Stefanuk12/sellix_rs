@@ -56,8 +56,7 @@ pub struct BlacklistRaw {
     #[serde_as(as = "TimestampSeconds<String, Flexible>")]
     pub updated_at: SystemTime,
     /// User ID, available if the blacklist has been edited.
-    #[serde_as(as = "TimestampSeconds<String, Flexible>")]
-    pub updated_by: SystemTime,
+    pub updated_by: u64,
 }
 
 /// Raw API response from here.
@@ -79,6 +78,8 @@ pub type BlacklistGetResponseRaw = RawAPIResponse<BlacklistOneRaw>;
 pub struct BlacklistsArray {
     pub blacklists: Vec<BlacklistRaw>
 }
+/// Raw API response from here.
+/// <https://developers.sellix.io/#blacklist-list>.
 pub type BlacklistListResponseRaw = RawAPIResponse<BlacklistsArray>;
 
 /// Represents the payload for creating (or updating) a blacklist.
@@ -94,9 +95,6 @@ pub struct BlacklistCreatePayload<'a> {
     pub note: Option<&'a str>
 }
 
-/// Represents the response after creating a blacklist.
-/// <https://developers.sellix.io/#blacklist-create>.
-/// Used for [`BlacklistCreateResponseRaw`]
 /// Represents the response after creating a blacklist.
 /// <https://developers.sellix.io/#blacklist-create>.
 pub type BlacklistCreateResponseRaw = RawAPIResponse<UniqidDict>;

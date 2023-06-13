@@ -43,8 +43,7 @@ pub struct WhitelistRaw {
     #[serde_as(as = "TimestampSeconds<String, Flexible>")]
     pub updated_at: SystemTime,
     /// User ID, available if the whitelist has been edited.
-    #[serde_as(as = "TimestampSeconds<String, Flexible>")]
-    pub updated_by: SystemTime,
+    pub updated_by: u64,
 }
 
 /// Raw API response from here.

@@ -6,6 +6,15 @@ use serde_with::formats::Flexible;
 use std::time::SystemTime;
 use super::{WeekDays, YearMonths};
 
+/// Types of discounts.
+#[derive(Debug, Clone, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display, PartialEq)]
+#[strum(serialize_all="SCREAMING_SNAKE_CASE")]
+#[serde(rename_all="SCREAMING_SNAKE_CASE")]
+pub enum DiscountType {
+    Percentage,
+    Fixed
+}
+
 /// Represents a product, only by its id and quantity.
 /// Used for [`SellixPaymentPayload`].
 #[derive(Debug, Serialize, Deserialize)]
@@ -269,8 +278,7 @@ pub struct SellixPaymentResponseWL {
     created_at: SystemTime,
     #[serde_as(as = "TimestampSeconds<String, Flexible>")]
     updated_at: SystemTime,
-    #[serde_as(as = "TimestampSeconds<String, Flexible>")]
-    updated_by: SystemTime,
+    updated_by: u64,
     serials: Vec<String>,
     file: Option<String>,
     webhooks: Vec<String>,

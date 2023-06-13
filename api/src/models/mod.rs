@@ -5,6 +5,7 @@ pub mod license;
 pub mod payment;
 pub mod events;
 pub mod whitelist;
+pub mod category;
 
 // Dependencies
 use reqwest::{Method, Error};
@@ -89,6 +90,12 @@ pub enum RequestType {
     WhitelistCreate,
     WhitelistUpdate,
     WhitelistDestroy,
+
+    CategoryGet,
+    CategoryList,
+    CategoryCreate,
+    CategoryUpdate,
+    CategoryDestroy,
 }
 impl RequestType {
     /// Returns a tuple that describes the method and path corrosponding to the [`RequestType`].
@@ -105,12 +112,18 @@ impl RequestType {
             RequestType::WhitelistCreate => (Method::POST, "/whitelists"),
             RequestType::WhitelistUpdate => (Method::PUT, "/whitelists/{{uniqid}}"),
             RequestType::WhitelistDestroy => (Method::DELETE, "/whitelists/{{uniqid}}"),
+
+            RequestType::CategoryGet => (Method::GET, "/categories/{{uniqid}}"),
+            RequestType::CategoryList => (Method::GET, "/categories?page={{page}}"),
+            RequestType::CategoryCreate => (Method::POST, "/categories"),
+            RequestType::CategoryUpdate => (Method::PUT, "/categories/{{uniqid}}"),
+            RequestType::CategoryDestroy => (Method::DELETE, "/categories/{{uniqid}}"),
         }
     }
 }
 
 /// All of the supported currencies.
-#[derive(Debug, strum_macros::EnumString, strum_macros::Display)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
 #[strum(serialize_all="UPPERCASE")]
 pub enum Currencies {
     CAD,
@@ -167,6 +180,7 @@ impl fmt::Display for SellixError {
 impl std::error::Error for SellixError {}
 impl From<Error> for SellixError {
     fn from(error: Error) -> Self {
+        println!("{}", error);
         SellixError {
             kind: SellixHttpCode::from_repr(error.status().unwrap().as_u16()).unwrap(),
             message: error.to_string(),
