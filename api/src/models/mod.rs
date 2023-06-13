@@ -6,6 +6,7 @@ pub mod payment;
 pub mod events;
 pub mod whitelist;
 pub mod category;
+pub mod coupon;
 
 // Dependencies
 use reqwest::{Method, Error};
@@ -96,6 +97,12 @@ pub enum RequestType {
     CategoryCreate,
     CategoryUpdate,
     CategoryDestroy,
+
+    CouponGet,
+    CouponList,
+    CouponCreate,
+    CouponUpdate,
+    CouponDestroy,
 }
 impl RequestType {
     /// Returns a tuple that describes the method and path corrosponding to the [`RequestType`].
@@ -118,6 +125,12 @@ impl RequestType {
             RequestType::CategoryCreate => (Method::POST, "/categories"),
             RequestType::CategoryUpdate => (Method::PUT, "/categories/{{uniqid}}"),
             RequestType::CategoryDestroy => (Method::DELETE, "/categories/{{uniqid}}"),
+
+            RequestType::CouponGet => (Method::GET, "/coupons/{{uniqid}}"),
+            RequestType::CouponList => (Method::GET, "/coupons?page={{page}}"),
+            RequestType::CouponCreate => (Method::POST, "/coupons"),
+            RequestType::CouponUpdate => (Method::PUT, "/coupons/{{uniqid}}"),
+            RequestType::CouponDestroy => (Method::DELETE, "/coupons/{{uniqid}}"),
         }
     }
 }

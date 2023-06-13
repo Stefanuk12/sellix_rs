@@ -81,7 +81,6 @@ impl Product {
     }
 }
 
-
 /// Represents all of the subscription events.
 /// <https://developers.sellix.io/#subscription-handle-webhook-events>.
 pub enum Subscription {

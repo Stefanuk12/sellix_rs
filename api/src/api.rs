@@ -3,7 +3,7 @@ use serde::Serialize;
 use serde_json::{Value, json};
 use async_trait::async_trait;
 use sellix_rs_macros::{WithAPIKey, WithDoRequest};
-use crate::models::{blacklist::{BlacklistRaw, BlacklistGetResponseRaw, BlacklistsArray, BlacklistListResponseRaw, BlacklistCreatePayload, BlacklistCreateResponseRaw}, RequestType, RawAPIResponse, SellixHttpCode, UniqidDict, SellixError, whitelist::{WhitelistRaw, WhitelistGetResponseRaw, WhitelistsArray, WhitelistListResponseRaw, WhitelistCreatePayload, WhitelistCreateResponseRaw}, category::{CategoryGetResponseRaw, CategoryRaw, CategoryArray, CategoryCreateResponseRaw, CategoryCreatePayload, CategoryListResponseRaw}};
+use crate::models::{blacklist::{BlacklistRaw, BlacklistGetResponseRaw, BlacklistsArray, BlacklistListResponseRaw, BlacklistCreatePayload, BlacklistCreateResponseRaw}, RequestType, RawAPIResponse, SellixHttpCode, UniqidDict, SellixError, whitelist::{WhitelistRaw, WhitelistGetResponseRaw, WhitelistsArray, WhitelistListResponseRaw, WhitelistCreatePayload, WhitelistCreateResponseRaw}, category::{CategoryGetResponseRaw, CategoryRaw, CategoryArray, CategoryCreateResponseRaw, CategoryCreatePayload, CategoryListResponseRaw}, coupon::{CouponGetResponseRaw, CouponListResponseRaw, CouponRaw, CouponCreateResponseRaw, CouponCreatePayload, CouponArray}};
 
 // Constants
 const API_BASE: &str = "https://dev.sellix.io/v1";
@@ -35,7 +35,6 @@ pub trait DoRequest: WithAPIKey {
         let json = response.json::<Value>().await?;
 
         // Check the status
-        println!("{}", json);
         let status = json["status"].as_u64().unwrap();
         if status == 200 {
             let json_resp: T = serde_json::from_value(json).unwrap();
@@ -320,6 +319,100 @@ impl Category {
     pub async fn delete(&self, uniqid: &str) -> Result<bool, SellixError> {
         // Used to build the url
         let (method, path_builder) = RequestType::CategoryDestroy.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &json!({
+                "uniqid": uniqid
+            }))
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<RawAPIResponse<()>, Value>(method, &path, None)
+            .await
+            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
+    }
+}
+
+/// Provide a discount to your products.
+#[derive(WithAPIKey, WithDoRequest)]
+pub struct Coupon {
+    pub api_key: String,
+    pub merchant: Option<String>
+}
+impl Coupon {
+    /// Creates a new instance.
+    pub fn new(api_key: &str, merchant: Option<&str>) -> Self {
+        Self {
+            api_key: api_key.to_string(),
+            merchant: merchant.and_then(|x| Some(x.to_string()))
+        }
+    }
+
+    /// Retrieves a Coupon by ID.
+    pub async fn get(&self, uniqid: &str) -> Result<CouponRaw, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CouponGet.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &json!({
+                "uniqid": uniqid
+            }))
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<CouponGetResponseRaw, CouponRaw>(method, &path, None)
+            .await
+            .and_then(|x| Ok(x.data.unwrap().coupon))
+    }
+
+    /// Returns a list of the Coupon. The whitelist are sorted by creation date, with the most recently created whitelist being first.
+    pub async fn get_list(&self, page: Option<u64>) -> Result<CouponArray, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CouponList.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &json!({
+                "page": page
+            }))
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<CouponListResponseRaw, CouponArray>(method, &path, None)
+            .await
+            .and_then(|x| Ok(x.data.unwrap()))
+    }
+
+    /// Creates a Coupon.
+    pub async fn create(&self, payload: CouponCreatePayload<'_>) -> Result<UniqidDict, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CouponCreate.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &payload)
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<CouponCreateResponseRaw, CouponCreatePayload>(method, &path, Some(payload))
+            .await
+            .and_then(|x| Ok(x.data.unwrap()))
+    }
+
+    /// Edits a Coupon.
+    pub async fn edit(&self, uniqid: &str, payload: CouponCreatePayload<'_>) -> Result<bool, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CouponUpdate.request_details();
+        let path = handlebars::Handlebars::new()
+            .render_template(path_builder, &json!({
+                "uniqid": uniqid
+            }))
+            .expect("unable to parse path");
+
+        // Send it
+        self.do_request::<RawAPIResponse<UniqidDict>, CouponCreatePayload>(method, &path, Some(payload))
+            .await
+            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
+    }
+
+    /// Deletes a Coupon.
+    pub async fn delete(&self, uniqid: &str) -> Result<bool, SellixError> {
+        // Used to build the url
+        let (method, path_builder) = RequestType::CouponDestroy.request_details();
         let path = handlebars::Handlebars::new()
             .render_template(path_builder, &json!({
                 "uniqid": uniqid
