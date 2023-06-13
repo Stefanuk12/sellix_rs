@@ -1,6 +1,6 @@
 // Dependencies
 use dotenv::dotenv;
-use sellix_rs::{ models::blacklist::{BlacklistCreatePayload, BlacklistTypes}, Client };
+use sellix_rs::{ models::whitelist::{WhitelistCreatePayload, WhitelistTypes}, Client };
 use std::env;
 
 // Entrypoint
@@ -17,19 +17,19 @@ async fn main() {
         println!("warning: MERCHANT environment variable is not present. Defaulting to first merchant.");
     }
 
-    // Build the client that would send out requests to the blacklist API
+    // Build the client that would send out requests to the whitelist API
     let client = Client::new( &api_key, merchant.as_deref() );
-    let blacklist_client = client.blacklist;
+    let whitelist_client = client.whitelist;
 
-    // Grab all of the blacklists
-    let blacklists = blacklist_client.edit("64878b298cf3d", BlacklistCreatePayload {
-        r#type: BlacklistTypes::Email,
+    // Grab all of the whitelists
+    let whitelists = whitelist_client.edit("648846c96b386", WhitelistCreatePayload {
+        r#type: WhitelistTypes::Email,
         data: "test2@example.com",
         note: Some("Testing")
     }).await;
-    if let Err(err) = blacklists {
-        println!("error: unable to edit blacklists - {}", err);
-    } else if let Ok(success) = blacklists {
-        println!("updated blacklist: {}", success);
+    if let Err(err) = whitelists {
+        println!("error: unable to edit whitelists - {}", err);
+    } else if let Ok(success) = whitelists {
+        println!("updated whitelist: {}", success);
     }
 }

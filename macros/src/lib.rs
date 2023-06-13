@@ -15,11 +15,6 @@ pub fn with_api_key_derive(input: TokenStream) -> TokenStream {
 
     // Generate the implementation of the trait.
     let expanded = quote! {  
-        /// Ensures that the API key exists within trait.
-        pub trait WithAPIKey {
-            fn api_key(&self) -> String;
-            fn merchant(&self) -> Option<String>;
-        }
         impl WithAPIKey for #name {
             fn api_key(&self) -> String {
                 self.api_key.clone()

@@ -5,7 +5,6 @@ pub mod models;
 pub mod api;
 pub mod client;
 use std::collections::HashMap;
-
 pub use client::Client;
 
 // Dependencies

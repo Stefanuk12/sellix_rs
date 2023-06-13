@@ -18,7 +18,7 @@ async fn main() {
     }
 
     // Build the client that would send out requests to the blacklist API
-    let client = Client::new( api_key, merchant );
+    let client = Client::new( &api_key, merchant.as_deref() );
     let blacklist_client = client.blacklist;
 
     // Grab all of the blacklists

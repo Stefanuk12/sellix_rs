@@ -4,6 +4,7 @@ pub mod subscription;
 pub mod license;
 pub mod payment;
 pub mod events;
+pub mod whitelist;
 
 // Dependencies
 use reqwest::{Method, Error};
@@ -81,7 +82,13 @@ pub enum RequestType {
     BlacklistList,
     BlacklistCreate,
     BlacklistUpdate,
-    BlacklistDestroy
+    BlacklistDestroy,
+
+    WhitelistGet,
+    WhitelistList,
+    WhitelistCreate,
+    WhitelistUpdate,
+    WhitelistDestroy,
 }
 impl RequestType {
     /// Returns a tuple that describes the method and path corrosponding to the [`RequestType`].
@@ -92,6 +99,12 @@ impl RequestType {
             RequestType::BlacklistCreate => (Method::POST, "/blacklists"),
             RequestType::BlacklistUpdate => (Method::PUT, "/blacklists/{{uniqid}}"),
             RequestType::BlacklistDestroy => (Method::DELETE, "/blacklists/{{uniqid}}"),
+
+            RequestType::WhitelistGet => (Method::GET, "/whitelists/{{uniqid}}"),
+            RequestType::WhitelistList => (Method::GET, "/whitelists?page={{page}}"),
+            RequestType::WhitelistCreate => (Method::POST, "/whitelists"),
+            RequestType::WhitelistUpdate => (Method::PUT, "/whitelists/{{uniqid}}"),
+            RequestType::WhitelistDestroy => (Method::DELETE, "/whitelists/{{uniqid}}"),
         }
     }
 }

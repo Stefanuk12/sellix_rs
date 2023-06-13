@@ -17,15 +17,15 @@ async fn main() {
         println!("warning: MERCHANT environment variable is not present. Defaulting to first merchant.");
     }
 
-    // Build the client that would send out requests to the blacklist API
+    // Build the client that would send out requests to the whitelist API
     let client = Client::new( &api_key, merchant.as_deref() );
-    let blacklist_client = client.blacklist;
+    let whitelist_client = client.whitelist;
 
-    // Grab all of the blacklists
-    let blacklists = blacklist_client.delete("64878b9f5af5d").await;
-    if let Err(err) = blacklists {
-        println!("error: unable to remove blacklist - {}", err);
-    } else if let Ok(all) = blacklists {
-        println!("blacklist removed: {}", all);
+    // Grab all of the whitelists
+    let whitelists = whitelist_client.get("648846c96b386").await;
+    if let Err(err) = whitelists {
+        println!("error: unable to get whitelist - {}", err);
+    } else if let Ok(whitelist) = whitelists {
+        println!("got whitelist {:?}", whitelist)
     }
 }
