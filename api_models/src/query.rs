@@ -5,7 +5,7 @@ use serde_with::formats::Flexible;
 use serde_with::TimestampSeconds;
 use serde::{Deserialize, Serialize};
 
-use super::{RawAPIResponse, UniqidDict, groups::GroupsBound, product::ProductsBound};
+use super::{RawAPIResponse, UniqidDict, group::GroupsBound, product::ProductsBound};
 
 /// The status of a Query.
 /// Used in [`QueryRaw`]
@@ -77,8 +77,9 @@ pub type QueryGetResponseRaw = RawAPIResponse<QueryOneRaw>;
 /// Used for [`QueryListResponseRaw`].
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QueryArray {
-    pub categories: Vec<QueryRaw>
+    pub queries: Vec<QueryRaw>
 }
+
 /// Raw API response from here.
 /// <https://developers.sellix.io/#query-list>.
 pub type QueryListResponseRaw = RawAPIResponse<QueryArray>;

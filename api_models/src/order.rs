@@ -1,6 +1,7 @@
 // Dependencies
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
+use crate::RawAPIResponse;
 use super::Currencies;
 
 /// The type of orders.
@@ -173,6 +174,29 @@ pub struct OrderRaw {
     pub updated_at: i64,
     pub updated_by: i64,
 }
+
+/// Raw API response from here.
+/// <https://developers.sellix.io/#order-get>.
+/// Used in [`OrderGetResponseRaw`]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct OrderOneRaw {
+    pub order: OrderRaw
+}
+
+/// Raw API response from here.
+/// <https://developers.sellix.io/#order-get>.
+pub type OrderGetResponseRaw = RawAPIResponse<OrderOneRaw>;
+
+/// Raw API response from here.
+/// <https://developers.sellix.io/#order-list>.
+/// Used for [`OrderListResponseRaw`].
+#[derive(Debug, Serialize, Deserialize)]
+pub struct OrderArray {
+    pub orders: Vec<OrderRaw>
+}
+/// Raw API response from here.
+/// <https://developers.sellix.io/#order-list>.
+pub type OrderListResponseRaw = RawAPIResponse<OrderArray>;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProductVariants {

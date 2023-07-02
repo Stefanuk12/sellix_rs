@@ -3,11 +3,11 @@ Exports
 */
 pub mod api;
 pub mod client;
-use std::collections::HashMap;
 pub use client::Client;
 pub use sellix_api_models;
 
 // Dependencies
+use std::collections::HashMap;
 use sellix_api_models::payment::PaymentGateway;
 use serde_repr::{Serialize_repr, Deserialize_repr};
 use sha2::Sha512;
@@ -142,7 +142,7 @@ impl ProductQuerystringBuilder {
 
         // Add all custom fields
         for (name, value) in &self.custom_fields {
-            output.push_str(&(name.to_owned() + "=" + &value + "&"));
+            output.push_str(&(name.to_owned() + "=" + value + "&"));
         }
 
         // Return output

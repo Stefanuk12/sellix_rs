@@ -12,7 +12,7 @@ pub mod order;
 pub mod product;
 pub mod invoice;
 pub mod dispute;
-pub mod groups;
+pub mod group;
 pub mod customer;
 pub mod query;
 
@@ -116,6 +116,18 @@ pub enum RequestType {
     FeedbackList,
     FeedbackReply,
 
+    OrderGet,
+    OrderList,
+    OrderCreate,
+    OrderUpdate,
+    OrderDestroy,
+
+    GroupGet,
+    GroupList,
+    GroupCreate,
+    GroupUpdate,
+    GroupDestroy,
+
     CustomerGet,
     CustomerList,
     CustomerCreate,
@@ -165,6 +177,18 @@ impl RequestType {
             RequestType::FeedbackList => (Method::GET, "/feedback?page={{page}}"),
             RequestType::FeedbackReply => (Method::POST, "/feedback/reply/{{uniqid}}"),
 
+            RequestType::OrderGet => (Method::GET, "/orders/{{uniqid}}"),
+            RequestType::OrderList => (Method::GET, "/orders?page={{page}}"),
+            RequestType::OrderCreate => (Method::POST, "/orders"),
+            RequestType::OrderUpdate => (Method::PUT, "/orders/{{uniqid}}"),
+            RequestType::OrderDestroy => (Method::DELETE, "/orders/{{uniqid}}"),
+
+            RequestType::GroupGet => (Method::GET, "/groups/{{uniqid}}"),
+            RequestType::GroupList => (Method::GET, "/groups?page={{page}}"),
+            RequestType::GroupCreate => (Method::POST, "/groups"),
+            RequestType::GroupUpdate => (Method::PUT, "/groups/{{uniqid}}"),
+            RequestType::GroupDestroy => (Method::DELETE, "/groups/{{uniqid}}"),
+    
             RequestType::CustomerGet => (Method::GET, "/customers/{{uniqid}}"),
             RequestType::CustomerList => (Method::GET, "/customers?page={{page}}"),
             RequestType::CustomerCreate => (Method::POST, "/customers"),

@@ -1,5 +1,5 @@
 // Dependencies
-use crate::api::{Blacklist, Whitelist, Category, Coupon, Feedback, Customer, Subscription};
+use crate::api::{Blacklist, Whitelist, Category, Coupon, Feedback, Customer, Subscription, Group, Order};
 
 /// Contains each "sub-API" within one struct.
 pub struct Client {
@@ -8,6 +8,8 @@ pub struct Client {
     pub category: Category,
     pub coupon: Coupon,
     pub feedback: Feedback,
+    pub order: Order,
+    pub group: Group,
     pub customer: Customer,
     pub subscription: Subscription
 }
@@ -20,6 +22,8 @@ impl Client {
             category: Category::client( api_key, merchant ),
             coupon: Coupon::client( api_key, merchant ),
             feedback: Feedback::client( api_key, merchant ),
+            order: Order::client( api_key, merchant ),
+            group: Group::client( api_key, merchant ),
             customer: Customer::client( api_key, merchant ),
             subscription: Subscription::client( api_key, merchant ),
         }

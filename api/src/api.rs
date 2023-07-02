@@ -101,8 +101,24 @@ impl Feedback {
         // Send it
         self.do_request::<RawAPIResponse<()>, FeedbackReplyPayload>(method, &path, Some(payload))
             .await
-            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
+            .map(|x| x.status == SellixHttpCode::Ok)
     }
+}
+
+/// Orders
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
+#[api_methods(create=false,edit=false,delete=false)]
+pub struct Order {
+    pub api_key: String,
+    pub merchant: Option<String>
+}
+
+
+/// Groups
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
+pub struct Group {
+    pub api_key: String,
+    pub merchant: Option<String>
 }
 
 /// Customers
