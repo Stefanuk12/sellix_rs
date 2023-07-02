@@ -1,14 +1,14 @@
 /*
 Exports
 */
-pub mod models;
 pub mod api;
 pub mod client;
 use std::collections::HashMap;
 pub use client::Client;
+pub use sellix_api_models;
 
 // Dependencies
-use models::payment::PaymentGateway;
+use sellix_api_models::payment::PaymentGateway;
 use serde_repr::{Serialize_repr, Deserialize_repr};
 use sha2::Sha512;
 use hmac::{Hmac, Mac};

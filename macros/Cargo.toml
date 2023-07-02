@@ -1,13 +1,15 @@
 [package]
-name = "sellix_rs_macros"
+name = "sellix_macros"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+darling = "0.20.1"
 quote = "1.0.28"
 syn = "2.0.18"
+sellix_api_models = { path = "../api_models" }
 
 [lib]
 proc-macro = true

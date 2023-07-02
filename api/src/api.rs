@@ -1,9 +1,9 @@
 // Dependencies
+use sellix_api_models::{SellixError, SellixHttpCode, RawAPIResponse, feedback::FeedbackReplyPayload, RequestType};
 use serde::Serialize;
 use serde_json::{Value, json};
 use async_trait::async_trait;
-use sellix_rs_macros::{WithAPIKey, WithDoRequest};
-use crate::models::{blacklist::{BlacklistRaw, BlacklistGetResponseRaw, BlacklistsArray, BlacklistListResponseRaw, BlacklistCreatePayload, BlacklistCreateResponseRaw}, RequestType, RawAPIResponse, SellixHttpCode, UniqidDict, SellixError, whitelist::{WhitelistRaw, WhitelistGetResponseRaw, WhitelistsArray, WhitelistListResponseRaw, WhitelistCreatePayload, WhitelistCreateResponseRaw}, category::{CategoryGetResponseRaw, CategoryRaw, CategoryArray, CategoryCreateResponseRaw, CategoryCreatePayload, CategoryListResponseRaw}, coupon::{CouponGetResponseRaw, CouponListResponseRaw, CouponRaw, CouponCreateResponseRaw, CouponCreatePayload, CouponArray}};
+use sellix_macros::{WithAPIKey, WithDoRequest, DefaultAPI};
 
 // Constants
 const API_BASE: &str = "https://dev.sellix.io/v1";
@@ -51,352 +51,47 @@ pub trait DoRequest: WithAPIKey {
 }
 
 /// Disallow certain people from accessing your shop.
-#[derive(WithAPIKey, WithDoRequest)]
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
 pub struct Blacklist {
     pub api_key: String,
     pub merchant: Option<String>
 }
-impl Blacklist {
-    /// Creates a new instance.
-    pub fn new(api_key: &str, merchant: Option<&str>) -> Self {
-        Self {
-            api_key: api_key.to_string(),
-            merchant: merchant.and_then(|x| Some(x.to_string()))
-        }
-    }
-
-    /// Retrieves a Blacklist by ID.
-    pub async fn get(&self, uniqid: &str) -> Result<BlacklistRaw, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::BlacklistGet.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<BlacklistGetResponseRaw, BlacklistRaw>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.data.unwrap().blacklist))
-    }
-
-    /// Returns a list of the Blacklist. The blacklist are sorted by creation date, with the most recently created blacklist being first.
-    pub async fn get_list(&self, page: Option<u64>) -> Result<BlacklistsArray, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::BlacklistList.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "page": page
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<BlacklistListResponseRaw, BlacklistsArray>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.data.unwrap()))
-    }
-
-    /// Creates a Blacklist.
-    pub async fn create(&self, payload: BlacklistCreatePayload<'_>) -> Result<UniqidDict, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::BlacklistCreate.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &payload)
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<BlacklistCreateResponseRaw, BlacklistCreatePayload>(method, &path, Some(payload))
-            .await
-            .and_then(|x| Ok(x.data.unwrap()))
-    }
-
-    /// Edits a Blacklist.
-    pub async fn edit(&self, uniqid: &str, payload: BlacklistCreatePayload<'_>) -> Result<bool, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::BlacklistUpdate.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<RawAPIResponse<()>, BlacklistCreatePayload>(method, &path, Some(payload))
-            .await
-            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
-    }
-
-    /// Deletes a Blacklist.
-    pub async fn delete(&self, uniqid: &str) -> Result<bool, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::BlacklistDestroy.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<RawAPIResponse<()>, Value>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
-    }
-}
 
 /// Allow certain people from accessing your shop.
-#[derive(WithAPIKey, WithDoRequest)]
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
 pub struct Whitelist {
     pub api_key: String,
     pub merchant: Option<String>
 }
-impl Whitelist {
-    /// Creates a new instance.
-    pub fn new(api_key: &str, merchant: Option<&str>) -> Self {
-        Self {
-            api_key: api_key.to_string(),
-            merchant: merchant.and_then(|x| Some(x.to_string()))
-        }
-    }
-
-    /// Retrieves a Whitelist by ID.
-    pub async fn get(&self, uniqid: &str) -> Result<WhitelistRaw, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::WhitelistGet.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<WhitelistGetResponseRaw, WhitelistRaw>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.data.unwrap().whitelist))
-    }
-
-    /// Returns a list of the Whitelist. The whitelist are sorted by creation date, with the most recently created whitelist being first.
-    pub async fn get_list(&self, page: Option<u64>) -> Result<WhitelistsArray, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::WhitelistList.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "page": page
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<WhitelistListResponseRaw, WhitelistsArray>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.data.unwrap()))
-    }
-
-    /// Creates a Whitelist.
-    pub async fn create(&self, payload: WhitelistCreatePayload<'_>) -> Result<UniqidDict, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::WhitelistCreate.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &payload)
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<WhitelistCreateResponseRaw, WhitelistCreatePayload>(method, &path, Some(payload))
-            .await
-            .and_then(|x| Ok(x.data.unwrap()))
-    }
-
-    /// Edits a Whitelist.
-    pub async fn edit(&self, uniqid: &str, payload: WhitelistCreatePayload<'_>) -> Result<bool, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::WhitelistUpdate.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<RawAPIResponse<()>, WhitelistCreatePayload>(method, &path, Some(payload))
-            .await
-            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
-    }
-
-    /// Deletes a Whitelist.
-    pub async fn delete(&self, uniqid: &str) -> Result<bool, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::WhitelistDestroy.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<RawAPIResponse<()>, Value>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
-    }
-}
 
 /// Categories
-#[derive(WithAPIKey, WithDoRequest)]
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
 pub struct Category {
     pub api_key: String,
     pub merchant: Option<String>
 }
-impl Category {
-    /// Creates a new instance.
-    pub fn new(api_key: &str, merchant: Option<&str>) -> Self {
-        Self {
-            api_key: api_key.to_string(),
-            merchant: merchant.and_then(|x| Some(x.to_string()))
-        }
-    }
-
-    /// Retrieves a Category by ID.
-    pub async fn get(&self, uniqid: &str) -> Result<CategoryRaw, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CategoryGet.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<CategoryGetResponseRaw, CategoryRaw>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.data.unwrap().category))
-    }
-
-    /// Returns a list of the Category. The whitelist are sorted by creation date, with the most recently created whitelist being first.
-    pub async fn get_list(&self, page: Option<u64>) -> Result<CategoryArray, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CategoryList.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "page": page
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<CategoryListResponseRaw, CategoryArray>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.data.unwrap()))
-    }
-
-    /// Creates a Category.
-    pub async fn create(&self, payload: CategoryCreatePayload<'_>) -> Result<UniqidDict, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CategoryCreate.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &payload)
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<CategoryCreateResponseRaw, CategoryCreatePayload>(method, &path, Some(payload))
-            .await
-            .and_then(|x| Ok(x.data.unwrap()))
-    }
-
-    /// Edits a Category.
-    pub async fn edit(&self, uniqid: &str, payload: CategoryCreatePayload<'_>) -> Result<bool, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CategoryUpdate.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<RawAPIResponse<UniqidDict>, CategoryCreatePayload>(method, &path, Some(payload))
-            .await
-            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
-    }
-
-    /// Deletes a Category.
-    pub async fn delete(&self, uniqid: &str) -> Result<bool, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CategoryDestroy.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<RawAPIResponse<()>, Value>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
-    }
-}
-
 /// Provide a discount to your products.
-#[derive(WithAPIKey, WithDoRequest)]
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
 pub struct Coupon {
     pub api_key: String,
     pub merchant: Option<String>
 }
-impl Coupon {
-    /// Creates a new instance.
-    pub fn new(api_key: &str, merchant: Option<&str>) -> Self {
-        Self {
-            api_key: api_key.to_string(),
-            merchant: merchant.and_then(|x| Some(x.to_string()))
-        }
-    }
 
-    /// Retrieves a Coupon by ID.
-    pub async fn get(&self, uniqid: &str) -> Result<CouponRaw, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CouponGet.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<CouponGetResponseRaw, CouponRaw>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.data.unwrap().coupon))
-    }
-
-    /// Returns a list of the Coupon. The whitelist are sorted by creation date, with the most recently created whitelist being first.
-    pub async fn get_list(&self, page: Option<u64>) -> Result<CouponArray, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CouponList.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "page": page
-            }))
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<CouponListResponseRaw, CouponArray>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.data.unwrap()))
-    }
-
-    /// Creates a Coupon.
-    pub async fn create(&self, payload: CouponCreatePayload<'_>) -> Result<UniqidDict, SellixError> {
+/// Manage feedback.
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
+#[api_methods(create=false,edit=false,delete=false)]
+pub struct Feedback {
+    pub api_key: String,
+    pub merchant: Option<String>
+}
+impl Feedback {
+    /// Replies to a Feedback.
+    pub async fn reply(&self, uniqid: &str, reply: &str) -> Result<bool, SellixError> {
         // Used to build the url
         let (method, path_builder) = RequestType::CouponCreate.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &payload)
-            .expect("unable to parse path");
-
-        // Send it
-        self.do_request::<CouponCreateResponseRaw, CouponCreatePayload>(method, &path, Some(payload))
-            .await
-            .and_then(|x| Ok(x.data.unwrap()))
-    }
-
-    /// Edits a Coupon.
-    pub async fn edit(&self, uniqid: &str, payload: CouponCreatePayload<'_>) -> Result<bool, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CouponUpdate.request_details();
+        let payload = FeedbackReplyPayload {
+            reply
+        };
         let path = handlebars::Handlebars::new()
             .render_template(path_builder, &json!({
                 "uniqid": uniqid
@@ -404,24 +99,30 @@ impl Coupon {
             .expect("unable to parse path");
 
         // Send it
-        self.do_request::<RawAPIResponse<UniqidDict>, CouponCreatePayload>(method, &path, Some(payload))
+        self.do_request::<RawAPIResponse<()>, FeedbackReplyPayload>(method, &path, Some(payload))
             .await
             .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
     }
+}
 
-    /// Deletes a Coupon.
-    pub async fn delete(&self, uniqid: &str) -> Result<bool, SellixError> {
-        // Used to build the url
-        let (method, path_builder) = RequestType::CouponDestroy.request_details();
-        let path = handlebars::Handlebars::new()
-            .render_template(path_builder, &json!({
-                "uniqid": uniqid
-            }))
-            .expect("unable to parse path");
+/// Customers
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
+pub struct Customer {
+    pub api_key: String,
+    pub merchant: Option<String>
+}
 
-        // Send it
-        self.do_request::<RawAPIResponse<()>, Value>(method, &path, None)
-            .await
-            .and_then(|x| Ok(x.status == SellixHttpCode::Ok))
-    }
+/// Queries
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
+pub struct Query {
+    pub api_key: String,
+    pub merchant: Option<String>
+}
+
+/// Subscriptions
+#[derive(WithAPIKey, WithDoRequest, DefaultAPI)]
+#[api_methods(edit=false)]
+pub struct Subscription {
+    pub api_key: String,
+    pub merchant: Option<String>
 }

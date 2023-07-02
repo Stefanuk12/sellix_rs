@@ -2,5 +2,6 @@
     "rust-analyzer.linkedProjects": [
         ".\\macros\\Cargo.toml",
         ".\\api\\Cargo.toml",
+        ".\\api_models\\Cargo.toml"
     ]
 }

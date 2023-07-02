@@ -2,5 +2,6 @@
 
 members = [
     "api",
+    "api_models",
     "macros",
 ]
