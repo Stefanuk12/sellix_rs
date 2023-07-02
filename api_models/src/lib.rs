@@ -276,7 +276,7 @@ impl From<Error> for SellixError {
 }
 
 /// All of the days in the week
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
 pub enum WeekDays {
     Mon,
     Tue,
@@ -288,7 +288,7 @@ pub enum WeekDays {
 }
 
 /// All of the months in the year
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
 pub enum YearMonths {
     Jan,
     Feb,

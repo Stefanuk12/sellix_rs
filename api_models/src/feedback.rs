@@ -8,6 +8,15 @@ use serde_with::TimestampSeconds;
 use serde_with::formats::Flexible;
 use std::time::SystemTime;
 
+/// Used to total up the feedback.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct Feedback {
+    pub total: u64,
+    pub positive: u64,
+    pub neutral: u64,
+    pub negative: u64,
+}
+
 /// The outcome of an appeal.
 /// Used by [`FeedbackRaw`]
 #[derive(Debug, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]

@@ -1,47 +1,60 @@
 // Dependencies
-use serde::{Serialize, Deserialize};
-use super::category::{CustomField, Feedback};
+use super::category::Feedback;
 use super::order::VolumeDiscount;
 use super::payment::PaymentGateway;
 use super::subscription::RecurringBillingIntervals;
 use super::Currencies;
-use serde_with::TimestampSeconds;
+use serde::{Deserialize, Serialize};
 use serde_with::formats::Flexible;
+use serde_with::TimestampSeconds;
 use std::time::SystemTime;
 
 /// Types of products.
 /// Used in [`ProductRaw`].
 #[derive(Debug, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
-#[strum(serialize_all="SCREAMING_SNAKE_CASE")]
-#[serde(rename_all="SCREAMING_SNAKE_CASE")]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ProductType {
     Serials,
     File,
     Service,
     Dynamic,
     InfoCard,
-    Subscription
+    Subscription,
 }
 
 /// Types of sub products.
 /// Used in [`ProductRaw`].
 #[derive(Debug, Serialize, Deserialize, strum_macros::EnumString, strum_macros::Display)]
-#[strum(serialize_all="SCREAMING_SNAKE_CASE")]
-#[serde(rename_all="SCREAMING_SNAKE_CASE")]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ProductSubType {
     Serials,
     File,
     Service,
-    Dynamic
+    Dynamic,
+}
+
+/// Used in [`CategoryRaw`].
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CustomField {
+    #[serde(rename = "type")]
+    pub type_field: String,
+    pub name: String,
+    pub regex: Option<String>,
+    pub placeholder: Option<String>,
+    pub default: Option<String>,
+    pub required: bool,
 }
 
 /// Used in [`CategoryRaw`].
 #[serde_with::serde_as]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct ProductsBound {
+pub struct ProductRaw {
     pub id: u64,
     pub uniqid: String,
     pub shop_id: u64,
+    #[serde(rename = "type")]
     pub type_field: String,
     pub subtype: Option<String>,
     pub title: String,

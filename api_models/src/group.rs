@@ -1,11 +1,11 @@
 // Dependencies
-use std::time::SystemTime;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_with::formats::Flexible;
 use serde_with::TimestampSeconds;
-use serde::{Deserialize, Serialize};
+use std::time::SystemTime;
 
-use super::{RawAPIResponse, UniqidDict, product::ProductsBound};
+use super::{product::ProductRaw, RawAPIResponse, UniqidDict};
 
 /// Used in [`GroupRaw`].
 #[serde_with::serde_as]
@@ -37,9 +37,9 @@ pub struct GroupRaw {
     /// Sort order of this group.
     pub sort_priority: u64,
     /// Array of products.
-    /// Please note that the product object contains limited fields, 
+    /// Please note that the product object contains limited fields,
     /// to get the full product object please use the Products API endpoint.
-    pub products_bound: Vec<ProductsBound>,
+    pub products_bound: Vec<ProductRaw>,
     /// How many products are present in the products_bound array.
     pub products_count: u64,
     /// Array of groups.
@@ -61,7 +61,7 @@ pub struct GroupRaw {
 /// Used in [`GroupGetResponseRaw`]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GroupOneRaw {
-    pub group: GroupRaw
+    pub group: GroupRaw,
 }
 
 /// Raw API response from here.
@@ -73,7 +73,7 @@ pub type GroupGetResponseRaw = RawAPIResponse<GroupOneRaw>;
 /// Used for [`GroupListResponseRaw`].
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GroupArray {
-    pub groups: Vec<GroupRaw>
+    pub groups: Vec<GroupRaw>,
 }
 /// Raw API response from here.
 /// <https://developers.sellix.io/#group-list>.
@@ -90,7 +90,7 @@ pub type GroupCreateResponseRaw = RawAPIResponse<UniqidDict>;
 pub struct GroupCreatePayload<'a> {
     pub title: &'a str,
     pub unlisted: Option<bool>,
-    pub products_bound: Option<Vec<ProductsBound>>,
+    pub products_bound: Option<Vec<ProductRaw>>,
     pub groups_array: Option<Vec<GroupsBound>>,
-    pub sort_priority: Option<u64>
+    pub sort_priority: Option<u64>,
 }

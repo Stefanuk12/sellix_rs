@@ -1,22 +1,24 @@
 // Dependencies
-use std::time::SystemTime;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_with::formats::Flexible;
 use serde_with::TimestampSeconds;
-use serde::{Deserialize, Serialize};
+use std::time::SystemTime;
 
-use super::{RawAPIResponse, UniqidDict, group::GroupsBound, product::ProductsBound};
+use super::{group::GroupsBound, product::ProductRaw, RawAPIResponse, UniqidDict};
 
 /// The status of a Query.
 /// Used in [`QueryRaw`]
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, strum_macros::EnumString, strum_macros::Display)]
-#[strum(serialize_all="SCREAMING_SNAKE_CASE")]
-#[serde(rename_all="SCREAMING_SNAKE_CASE")]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, PartialEq, strum_macros::EnumString, strum_macros::Display,
+)]
+#[strum(serialize_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum QueryStatus {
     Pending,
     Closed,
     ShopReply,
-    CustomerReply
+    CustomerReply,
 }
 
 /// Represents the raw API response for a query message object.
@@ -65,7 +67,7 @@ pub struct QueryRaw {
 /// Used in [`QueryGetResponseRaw`]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QueryOneRaw {
-    pub query: QueryRaw
+    pub query: QueryRaw,
 }
 
 /// Raw API response from here.
@@ -77,7 +79,7 @@ pub type QueryGetResponseRaw = RawAPIResponse<QueryOneRaw>;
 /// Used for [`QueryListResponseRaw`].
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QueryArray {
-    pub queries: Vec<QueryRaw>
+    pub queries: Vec<QueryRaw>,
 }
 
 /// Raw API response from here.
@@ -95,7 +97,7 @@ pub type QueryCreateResponseRaw = RawAPIResponse<UniqidDict>;
 pub struct QueryCreatePayload<'a> {
     pub title: &'a str,
     pub unlisted: Option<bool>,
-    pub products_bound: Option<Vec<ProductsBound>>,
+    pub products_bound: Option<Vec<ProductRaw>>,
     pub groups_array: Option<Vec<GroupsBound>>,
-    pub sort_priority: Option<u64>
+    pub sort_priority: Option<u64>,
 }

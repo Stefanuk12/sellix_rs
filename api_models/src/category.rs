@@ -1,11 +1,11 @@
 // Dependencies
-use std::time::SystemTime;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use serde_with::formats::Flexible;
 use serde_with::TimestampSeconds;
-use serde::{Deserialize, Serialize};
+use std::time::SystemTime;
 
-use super::{payment::DiscountType, RawAPIResponse, UniqidDict, product::ProductsBound};
+use super::{payment::DiscountType, product::ProductRaw, RawAPIResponse, UniqidDict};
 
 /// Used in [`CategoryRaw`].
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -14,18 +14,6 @@ pub struct Feedback {
     pub positive: u64,
     pub neutral: u64,
     pub negative: u64,
-}
-
-/// Used in [`CategoryRaw`].
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CustomField {
-    #[serde(rename = "type")]
-    pub type_field: String,
-    pub name: String,
-    pub regex: Option<String>,
-    pub placeholder: Option<String>,
-    pub default: Option<String>,
-    pub required: bool,
 }
 
 /// Used in [`CategoryRaw`].
@@ -67,9 +55,9 @@ pub struct CategoryRaw {
     /// Sort order of this category.
     pub sort_priority: u64,
     /// Array of products.
-    /// Please note that the product object contains limited fields, 
+    /// Please note that the product object contains limited fields,
     /// to get the full product object please use the Products API endpoint.
-    pub products_bound: Vec<ProductsBound>,
+    pub products_bound: Vec<ProductRaw>,
     /// How many products are present in the products_bound array.
     pub products_count: u64,
     /// Array of groups.
@@ -91,7 +79,7 @@ pub struct CategoryRaw {
 /// Used in [`CategoryGetResponseRaw`]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CategoryOneRaw {
-    pub category: CategoryRaw
+    pub category: CategoryRaw,
 }
 
 /// Raw API response from here.
@@ -103,7 +91,7 @@ pub type CategoryGetResponseRaw = RawAPIResponse<CategoryOneRaw>;
 /// Used for [`CategoryListResponseRaw`].
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CategoryArray {
-    pub categories: Vec<CategoryRaw>
+    pub categories: Vec<CategoryRaw>,
 }
 /// Raw API response from here.
 /// <https://developers.sellix.io/#category-list>.
@@ -120,7 +108,7 @@ pub type CategoryCreateResponseRaw = RawAPIResponse<UniqidDict>;
 pub struct CategoryCreatePayload<'a> {
     pub title: &'a str,
     pub unlisted: Option<bool>,
-    pub products_bound: Option<Vec<ProductsBound>>,
+    pub products_bound: Option<Vec<ProductRaw>>,
     pub groups_array: Option<Vec<GroupsBound>>,
-    pub sort_priority: Option<u64>
+    pub sort_priority: Option<u64>,
 }
