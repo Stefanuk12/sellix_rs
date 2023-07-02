@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 /// Represents all of the order events.
 pub enum Order {
     Created,
@@ -14,24 +16,28 @@ pub enum Order {
     PartialProduct,
     UpdatedProduct
 }
-impl Order {
-    pub fn from_str(x: &str) -> Self {
+#[derive(Debug, PartialEq, Eq)]
+pub struct ParseOrderError;
+impl FromStr for Order {
+    fn from_str(x: &str) -> Result<Self, Self::Err> {
         match x {
-            "order:created" => Self::Created,
-            "order:partial" => Self::Partial,
-            "order:updated" => Self::Updated,
-            "order:paid" => Self::Paid,
-            "order:cancelled" => Self::Cancelled,
-            "order:disputed" => Self::Disputed,
-            "order:paid:product" => Self::PaidProduct,
-            "order:cancelled:product" => Self::CancelledProduct,
-            "order:disputed:product" => Self::DisputedProduct,
-            "order:created:product" => Self::CreatedProduct,
-            "order:partial:product" => Self::PartialProduct,
-            "order:updated:product" => Self::UpdatedProduct,
-            _ => panic!("Invalid input"),
+            "order:created" => Ok(Self::Created),
+            "order:partial" => Ok(Self::Partial),
+            "order:updated" => Ok(Self::Updated),
+            "order:paid" => Ok(Self::Paid),
+            "order:cancelled" => Ok(Self::Cancelled),
+            "order:disputed" => Ok(Self::Disputed),
+            "order:paid:product" => Ok(Self::PaidProduct),
+            "order:cancelled:product" => Ok(Self::CancelledProduct),
+            "order:disputed:product" => Ok(Self::DisputedProduct),
+            "order:created:product" => Ok(Self::CreatedProduct),
+            "order:partial:product" => Ok(Self::PartialProduct),
+            "order:updated:product" => Ok(Self::UpdatedProduct),
+            _ => Err(Self::Err {}),
         }
     }
+
+    type Err = ParseOrderError;
 }
 
 /// Represents all of the query events.
@@ -39,27 +45,35 @@ pub enum Query {
     Created,
     Replied,
 }
-impl Query {
-    pub fn from_str(x: &str) -> Self {
+#[derive(Debug, PartialEq, Eq)]
+pub struct ParseQueryError;
+impl FromStr for Query {
+    fn from_str(x: &str) -> Result<Self, Self::Err> {
         match x {
-            "query:created" => Self::Created,
-            "query:replied" => Self::Replied,
-            _ => panic!("Invalid input"),
+            "query:created" => Ok(Self::Created),
+            "query:replied" => Ok(Self::Replied),
+            _ => Err(Self::Err {}),
         }
     }
+
+    type Err = ParseQueryError;
 }
 
 /// Represents all of the feedback events.
 pub enum Feedback {
     Created,
 }
-impl Feedback {
-    pub fn from_str(x: &str) -> Self {
+#[derive(Debug, PartialEq, Eq)]
+pub struct ParseFeedbackError;
+impl FromStr for Feedback {
+    fn from_str(x: &str) -> Result<Self, Self::Err> {
         match x {
-            "feedback:created" => Self::Created,
-            _ => panic!("Invalid input"),
+            "feedback:created" => Ok(Self::Created),
+            _ => Err(Self::Err {}),
         }
     }
+
+    type Err = ParseProductError;
 }
 
 /// Represents all of the product events.
@@ -69,16 +83,20 @@ pub enum Product {
     Stock,
     Dynamic,
 }
-impl Product {
-    pub fn from_str(x: &str) -> Self {
+#[derive(Debug, PartialEq, Eq)]
+pub struct ParseProductError;
+impl FromStr for Product {
+    fn from_str(x: &str) -> Result<Self, Self::Err> {
         match x {
-            "product:created" => Self::Created,
-            "product:edited" => Self::Edited,
-            "product:stock" => Self::Stock,
-            "product:dynamic" => Self::Dynamic,
-            _ => panic!("Invalid input"),
+            "product:created" => Ok(Self::Created),
+            "product:edited" => Ok(Self::Edited),
+            "product:stock" => Ok(Self::Stock),
+            "product:dynamic" => Ok(Self::Dynamic),
+            _ => Err(Self::Err {}),
         }
     }
+
+    type Err = ParseProductError;
 }
 
 /// Represents all of the subscription events.
@@ -116,24 +134,28 @@ pub enum Subscription {
     CancelledProduct,
     UpcomingProduct,
 }
-impl Subscription {
-    pub fn from_str(x: &str) -> Self {
+#[derive(Debug, PartialEq, Eq)]
+pub struct ParseSubscriptionError;
+impl FromStr for Subscription {
+    fn from_str(x: &str) -> Result<Self, Self::Err> {
         match x {
-            "subscription:created" => Self::Created,
-            "subscription:updated" => Self::Updated,
-            "subscription:renewed" => Self::Renewed,
-            "subscription:cancelled" => Self::Cancelled,
-            "subscription:upcoming" => Self::Upcoming,
-            "subscription:trial:started" => Self::TrialStarted,
-            "subscription:trial:ended" => Self::TrialEnded,
-            "subscription:trial:started:product" => Self::TrialStartedProduct,
-            "subscription:trial:ended:product" => Self::TrialEndedProduct,
-            "subscription:created:product" => Self::CreatedProduct,
-            "subscription:updated:product" => Self::UpdatedProduct,
-            "subscription:renewed:product" => Self::RenewedProduct,
-            "subscription:cancelled:product" => Self::CancelledProduct,
-            "subscription:upcoming:product" => Self::UpcomingProduct,
-            _ => panic!("Invalid input"),
+            "subscription:created" => Ok(Self::Created),
+            "subscription:updated" => Ok(Self::Updated),
+            "subscription:renewed" => Ok(Self::Renewed),
+            "subscription:cancelled" => Ok(Self::Cancelled),
+            "subscription:upcoming" => Ok(Self::Upcoming),
+            "subscription:trial:started" => Ok(Self::TrialStarted),
+            "subscription:trial:ended" => Ok(Self::TrialEnded),
+            "subscription:trial:started:product" => Ok(Self::TrialStartedProduct),
+            "subscription:trial:ended:product" => Ok(Self::TrialEndedProduct),
+            "subscription:created:product" => Ok(Self::CreatedProduct),
+            "subscription:updated:product" => Ok(Self::UpdatedProduct),
+            "subscription:renewed:product" => Ok(Self::RenewedProduct),
+            "subscription:cancelled:product" => Ok(Self::CancelledProduct),
+            "subscription:upcoming:product" => Ok(Self::UpcomingProduct),
+            _ => Err(Self::Err {}),
         }
     }
+
+    type Err = ParseSubscriptionError;
 }
