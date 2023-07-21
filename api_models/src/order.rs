@@ -97,7 +97,7 @@ pub struct OrderRaw {
     pub paypal_email_delivery: bool,
     /// Key-Value object.
     /// Key is the product ID and value is the details of the variant chosen.
-    pub product_variants: HashMap<String, ProductVariant>,
+    pub product_variants: Option<HashMap<String, ProductVariant>>,
     /// Unique ID of the product for which this feedback has been posted.
     pub product_id: String,
     /// Product title.

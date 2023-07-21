@@ -15,6 +15,7 @@ pub mod dispute;
 pub mod group;
 pub mod customer;
 pub mod query;
+pub mod webhook;
 
 // Dependencies
 use reqwest::{Method, Error};
